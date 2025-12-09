@@ -1,5 +1,6 @@
 ﻿using DAL.Abstract;
 using DAL.Impl;
+using Entities;
 
 namespace TestConsole
 {
@@ -9,11 +10,24 @@ namespace TestConsole
         {
            IUserRepository userRepository = new UserRepository();
 
-            var listaUser = userRepository.GetAll();
-            foreach (var item in listaUser)
+            User user = new User
             {
-                Console.WriteLine(item.FirstName+" "+item.LastName);
+                FirstName = "Test",
+                LastName = "Test",
+                Email = "test@gmail.com",
+                PasswordHash = "pass",
+                Status = true,
+                IdRole = 1
+            };
+            if (userRepository.Add(user)==true) {
+                Console.WriteLine("Uspeno");
+            
             }
+            else
+            {
+                Console.WriteLine("Greska");
+            }
+   
         }
     }
 }

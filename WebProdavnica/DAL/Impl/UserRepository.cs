@@ -61,10 +61,11 @@ namespace DAL.Impl
                 if (reader.Read())
                 {
                     User user = new User();
+                    user.Email = reader.GetString(3);
                     user.IdUser = reader.GetInt32(0);
                     user.FirstName = reader.GetString(1);
                     user.LastName = reader.GetString(2);
-                    user.Email = reader.GetString(3);
+                   
                     user.PasswordHash = reader.GetString(4);
                     user.Status = reader.GetBoolean(5);
                     user.CreatedDate = reader.GetDateTime(6);
@@ -77,17 +78,77 @@ namespace DAL.Impl
 
         public List<User> GetAll()
         {
-            throw new NotImplementedException();
+            List<User> list = new List<User>();
+            using (SqlConnection sqlConnection = new SqlConnection(DataBaseConstant.ConnectionString))
+            {
+                sqlConnection.Open();
+                SqlCommand cmd = sqlConnection.CreateCommand();
+                cmd.CommandText = "SELECT * FROM Users";
+
+                SqlDataReader reader = cmd.ExecuteReader();
+                while (reader.Read())
+                {
+                    
+                    User user = new User();
+                    user.IdUser = reader.GetInt32(0);
+                    user.FirstName = reader.GetString(1);
+                    user.LastName = reader.GetString(2);
+                    user.Email = reader.GetString(3);
+                    user.PasswordHash = reader.GetString(4);
+                    user.Status = reader.GetBoolean(5);
+                    user.CreatedDate = reader.GetDateTime(6);
+                    user.IdRole = reader.GetInt32(7);
+                   list.Add(user);
+                }
+                return list;
+            }
         }
 
         public User GetByEmail(string email)
         {
-            throw new NotImplementedException();
+            using (SqlConnection sqlConnection = new SqlConnection(DataBaseConstant.ConnectionString))
+            {
+                sqlConnection.Open();
+                SqlCommand cmd = sqlConnection.CreateCommand();
+                cmd.CommandText = "SELECT * FROM Users WHERE Email=@x";
+
+                cmd.Parameters.AddWithValue("@x", email);
+                SqlDataReader reader = cmd.ExecuteReader();
+                if (reader.Read())
+                {
+                    User user = new User();
+                    user.Email = reader.GetString(3);
+                    user.IdUser = reader.GetInt32(0);
+                    user.FirstName = reader.GetString(1);
+                    user.LastName = reader.GetString(2);
+                    user.PasswordHash = reader.GetString(4);
+                    user.Status = reader.GetBoolean(5);
+                    user.CreatedDate = reader.GetDateTime(6);
+                    user.IdRole = reader.GetInt32(7);
+                    return user;
+                }
+                return new User();
+            }
         }
 
         public bool Update(User item)
         {
-            throw new NotImplementedException();
+            using (SqlConnection sqlConnection = new SqlConnection(DataBaseConstant.ConnectionString))
+            {
+                sqlConnection.Open();
+                SqlCommand cmd = sqlConnection.CreateCommand();
+                cmd.CommandText = "UPDATE Users SET FirstName=@FirstName, LastName=@LastName, Email=@Email,PasswordHash=@PasswordHash, Status=@Status, IdRole=@IdRole WHERE IdUser=@IdUser";
+
+                cmd.Parameters.AddWithValue("@FirstName", item.FirstName);
+                cmd.Parameters.AddWithValue("@LastName", item.LastName);
+                cmd.Parameters.AddWithValue("@Email", item.Email);
+                cmd.Parameters.AddWithValue("@PasswordHash", item.PasswordHash);
+                cmd.Parameters.AddWithValue("@Status", item.Status);
+                cmd.Parameters.AddWithValue("@IdRole", item.IdRole);
+                cmd.Parameters.AddWithValue("@IdUser", item.IdUser);
+                return cmd.ExecuteNonQuery() > 0;
+
+            }
         }
     }
 }
