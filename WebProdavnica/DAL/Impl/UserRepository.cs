@@ -34,12 +34,45 @@ namespace DAL.Impl
 
         public bool Delete(int Id)
         {
-            throw new NotImplementedException();
+            using (SqlConnection sqlConnection = new SqlConnection(DataBaseConstant.ConnectionString))
+            {
+                sqlConnection.Open();
+                SqlCommand cmd = sqlConnection.CreateCommand();
+                cmd.CommandText = "DELETE FROM Users WHERE IdUser=@x";
+
+                cmd.Parameters.AddWithValue("@x", Id);
+          
+
+                return cmd.ExecuteNonQuery() > 0;
+
+            }
         }
 
         public User Get(int id)
         {
-            throw new NotImplementedException();
+            using (SqlConnection sqlConnection = new SqlConnection(DataBaseConstant.ConnectionString))
+            {
+                sqlConnection.Open();
+                SqlCommand cmd = sqlConnection.CreateCommand();
+                cmd.CommandText = "SELECT * FROM Users WHERE IdUser=@x";
+
+                cmd.Parameters.AddWithValue("@x", id);
+                SqlDataReader reader = cmd.ExecuteReader();
+                if (reader.Read())
+                {
+                    User user = new User();
+                    user.IdUser = reader.GetInt32(0);
+                    user.FirstName = reader.GetString(1);
+                    user.LastName = reader.GetString(2);
+                    user.Email = reader.GetString(3);
+                    user.PasswordHash = reader.GetString(4);
+                    user.Status = reader.GetBoolean(5);
+                    user.CreatedDate = reader.GetDateTime(6);
+                    user.IdRole = reader.GetInt32(7);
+                    return user;
+                }
+                return new User();
+            }
         }
 
         public List<User> GetAll()
