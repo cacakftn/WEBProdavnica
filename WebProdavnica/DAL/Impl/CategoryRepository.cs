@@ -10,21 +10,17 @@ using Microsoft.Data.SqlClient;
 
 namespace DAL.Impl
 {
-    public class ProductRepository : IProductRepository
+    public class CategoryRepository : ICategoryRepository
     {
-        public bool Add(Product item)
+        public bool Add(Category item)
         {
             using (SqlConnection sqlConnection = new SqlConnection(DataBaseConstant.ConnectionString))
             {
                 sqlConnection.Open();
                 SqlCommand cmd = sqlConnection.CreateCommand();
-                cmd.CommandText = "INSERT INTO Products(Name,Price,Count, IdCategory) VALUES(@Name,@Price,@Count, @IdCategory)";
+                cmd.CommandText = "INSERT INTO Categories(Name) VALUES(@Name)";
 
                 cmd.Parameters.AddWithValue("@Name", item.Name);
-                cmd.Parameters.AddWithValue("@Price", item.Price);
-                cmd.Parameters.AddWithValue("@Count", item.Count);
-                cmd.Parameters.AddWithValue("@IdCategory", item.IdCategory);
-        
 
                 return cmd.ExecuteNonQuery() > 0;
 
@@ -37,75 +33,67 @@ namespace DAL.Impl
             {
                 sqlConnection.Open();
                 SqlCommand cmd = sqlConnection.CreateCommand();
-                cmd.CommandText = "DELETE FROM Products WHERE IdProduct=@x";
+                cmd.CommandText = "DELETE FROM Categories WHERE IdCategory=@x";
 
                 cmd.Parameters.AddWithValue("@x", Id);
- 
+
+
                 return cmd.ExecuteNonQuery() > 0;
 
             }
         }
 
-        public Product Get(int id)
+        public Category Get(int id)
         {
             using (SqlConnection sqlConnection = new SqlConnection(DataBaseConstant.ConnectionString))
             {
                 sqlConnection.Open();
                 SqlCommand cmd = sqlConnection.CreateCommand();
-                cmd.CommandText = "SELECT * FROM Products WHERE IdProduct=@x";
+                cmd.CommandText = "SELECT * FROM Categories WHERE IdCategory=@x";
 
                 cmd.Parameters.AddWithValue("@x", id);
                 SqlDataReader reader = cmd.ExecuteReader();
                 if (reader.Read())
                 {
-                    Product product = new Product();
-                    product.IdProduct = reader.GetInt32(0);
-                    product.Name = reader.GetString(1);
-                    product.Price = reader.GetDecimal(2);
-                    product.Count = reader.GetInt32(3);
-                    product.IdCategory = reader.GetInt32(4);
-                    return product;
+                   Category category = new Category();
+                    category.IdCategory = reader.GetInt32(0);
+                    category.Name = reader.GetString(1);
+                    return category;
                 }
-                return new Product();
+                return new Category();
             }
         }
 
-        public List<Product> GetAll()
+        public List<Category> GetAll()
         {
-            List<Product> products = new List<Product>();
+            List<Category> list = new List<Category>();
             using (SqlConnection sqlConnection = new SqlConnection(DataBaseConstant.ConnectionString))
             {
                 sqlConnection.Open();
                 SqlCommand cmd = sqlConnection.CreateCommand();
-                cmd.CommandText = "SELECT * FROM Products";
+                cmd.CommandText = "SELECT * FROM Categories";
+
                 SqlDataReader reader = cmd.ExecuteReader();
                 while (reader.Read())
                 {
-                    Product product = new Product();
-                    product.IdProduct = reader.GetInt32(0);
-                    product.Name = reader.GetString(1);
-                    product.Price = reader.GetDecimal(2);
-                    product.Count = reader.GetInt32(3);
-                    product.IdCategory = reader.GetInt32(4);
-                    products.Add(product);
+                    Category category = new Category();
+                    category.IdCategory = reader.GetInt32(0);
+                    category.Name = reader.GetString(1);
+                    list.Add(category);
                 }
-                return products;
+                return list;
             }
         }
 
-        public bool Update(Product item)
+        public bool Update(Category item)
         {
             using (SqlConnection sqlConnection = new SqlConnection(DataBaseConstant.ConnectionString))
             {
                 sqlConnection.Open();
                 SqlCommand cmd = sqlConnection.CreateCommand();
-                cmd.CommandText = "UPDATE Products SET Name=@Name, Price=@Price,Count=@Count, IdCategory=@IdCategory WHERE IdProduct=@IdProduct";
-
+                cmd.CommandText = "UPDATE Categories SET Name=@Name WHERE IdCategory=@IdCategory";
                 cmd.Parameters.AddWithValue("@Name", item.Name);
-                cmd.Parameters.AddWithValue("@Price", item.Price);
-                cmd.Parameters.AddWithValue("@Count", item.Count);
                 cmd.Parameters.AddWithValue("@IdCategory", item.IdCategory);
-                cmd.Parameters.AddWithValue("@IdProduct", item.IdProduct);
 
                 return cmd.ExecuteNonQuery() > 0;
 

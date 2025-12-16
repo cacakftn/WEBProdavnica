@@ -10,21 +10,17 @@ using Microsoft.Data.SqlClient;
 
 namespace DAL.Impl
 {
-    public class ProductRepository : IProductRepository
+    public class RoleRepository : IRoleRepository
     {
-        public bool Add(Product item)
+        public bool Add(Role item)
         {
             using (SqlConnection sqlConnection = new SqlConnection(DataBaseConstant.ConnectionString))
             {
                 sqlConnection.Open();
                 SqlCommand cmd = sqlConnection.CreateCommand();
-                cmd.CommandText = "INSERT INTO Products(Name,Price,Count, IdCategory) VALUES(@Name,@Price,@Count, @IdCategory)";
+                cmd.CommandText = "INSERT INTO Roles(Name) VALUES(@Name)";
 
                 cmd.Parameters.AddWithValue("@Name", item.Name);
-                cmd.Parameters.AddWithValue("@Price", item.Price);
-                cmd.Parameters.AddWithValue("@Count", item.Count);
-                cmd.Parameters.AddWithValue("@IdCategory", item.IdCategory);
-        
 
                 return cmd.ExecuteNonQuery() > 0;
 
@@ -37,76 +33,69 @@ namespace DAL.Impl
             {
                 sqlConnection.Open();
                 SqlCommand cmd = sqlConnection.CreateCommand();
-                cmd.CommandText = "DELETE FROM Products WHERE IdProduct=@x";
+                cmd.CommandText = "DELETE FROM Roles WHERE IdRole=@x";
 
                 cmd.Parameters.AddWithValue("@x", Id);
- 
+
+
                 return cmd.ExecuteNonQuery() > 0;
 
             }
         }
 
-        public Product Get(int id)
+        public Role Get(int id)
         {
             using (SqlConnection sqlConnection = new SqlConnection(DataBaseConstant.ConnectionString))
             {
                 sqlConnection.Open();
                 SqlCommand cmd = sqlConnection.CreateCommand();
-                cmd.CommandText = "SELECT * FROM Products WHERE IdProduct=@x";
+                cmd.CommandText = "SELECT * FROM Roles WHERE IdRole=@x";
 
                 cmd.Parameters.AddWithValue("@x", id);
                 SqlDataReader reader = cmd.ExecuteReader();
                 if (reader.Read())
                 {
-                    Product product = new Product();
-                    product.IdProduct = reader.GetInt32(0);
-                    product.Name = reader.GetString(1);
-                    product.Price = reader.GetDecimal(2);
-                    product.Count = reader.GetInt32(3);
-                    product.IdCategory = reader.GetInt32(4);
-                    return product;
+                    Role role = new Role();
+                    role.IdRole = reader.GetInt32(0);
+                    role.Name = reader.GetString(1);
+                    return role; 
                 }
-                return new Product();
+                return new Role();
             }
         }
 
-        public List<Product> GetAll()
+        public List<Role> GetAll()
         {
-            List<Product> products = new List<Product>();
+            List<Role> list = new List<Role>();
             using (SqlConnection sqlConnection = new SqlConnection(DataBaseConstant.ConnectionString))
             {
                 sqlConnection.Open();
                 SqlCommand cmd = sqlConnection.CreateCommand();
-                cmd.CommandText = "SELECT * FROM Products";
+                cmd.CommandText = "SELECT * FROM Roles";
+
+            
                 SqlDataReader reader = cmd.ExecuteReader();
                 while (reader.Read())
                 {
-                    Product product = new Product();
-                    product.IdProduct = reader.GetInt32(0);
-                    product.Name = reader.GetString(1);
-                    product.Price = reader.GetDecimal(2);
-                    product.Count = reader.GetInt32(3);
-                    product.IdCategory = reader.GetInt32(4);
-                    products.Add(product);
+                    Role role = new Role();
+                    role.IdRole = reader.GetInt32(0);
+                    role.Name = reader.GetString(1);
+                    list.Add(role);
                 }
-                return products;
+                return list;
             }
         }
 
-        public bool Update(Product item)
+        public bool Update(Role item)
         {
             using (SqlConnection sqlConnection = new SqlConnection(DataBaseConstant.ConnectionString))
             {
                 sqlConnection.Open();
                 SqlCommand cmd = sqlConnection.CreateCommand();
-                cmd.CommandText = "UPDATE Products SET Name=@Name, Price=@Price,Count=@Count, IdCategory=@IdCategory WHERE IdProduct=@IdProduct";
+                cmd.CommandText = "UPDATE Roles SET Name=@Name WHERE IdRole=@Id";
 
                 cmd.Parameters.AddWithValue("@Name", item.Name);
-                cmd.Parameters.AddWithValue("@Price", item.Price);
-                cmd.Parameters.AddWithValue("@Count", item.Count);
-                cmd.Parameters.AddWithValue("@IdCategory", item.IdCategory);
-                cmd.Parameters.AddWithValue("@IdProduct", item.IdProduct);
-
+                cmd.Parameters.AddWithValue("@Id", item.IdRole);
                 return cmd.ExecuteNonQuery() > 0;
 
             }
