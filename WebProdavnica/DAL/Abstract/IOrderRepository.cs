@@ -10,5 +10,6 @@ namespace DAL.Abstract
 {
     public interface IOrderRepository : IRepository<Order>
     {
+        Order GetOrderByUser(int userId);
     }
 }

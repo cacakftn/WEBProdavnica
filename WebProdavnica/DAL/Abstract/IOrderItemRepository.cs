@@ -9,6 +9,7 @@ using Entities;
 namespace DAL.Abstract
 {
     public interface IOrderItemRepository : IRepository<OrderItem>
-    { 
+    {
+        OrderItem GetByOrderAndProduct(int orderId, int productId);
     }
 }

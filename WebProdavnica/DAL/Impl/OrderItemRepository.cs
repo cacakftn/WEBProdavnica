@@ -92,6 +92,31 @@ namespace DAL.Impl
             }
         }
 
+        public OrderItem GetByOrderAndProduct(int orderId, int productId)
+        {
+            using (SqlConnection sqlConnection = new SqlConnection(DataBaseConstant.ConnectionString))
+            {
+                sqlConnection.Open();
+                SqlCommand cmd = sqlConnection.CreateCommand();
+                cmd.CommandText = "SELECT * FROM OrderItems WHERE IdOrder=@oid AND IdProduct=@pid";
+
+                cmd.Parameters.AddWithValue("@oid", orderId);
+                cmd.Parameters.AddWithValue("@pid", productId);
+                SqlDataReader reader = cmd.ExecuteReader();
+                if (reader.Read())
+                {
+                    OrderItem item = new OrderItem();
+                    item.IdOrderItem = reader.GetInt32(0);
+                    item.IdOrder = reader.GetInt32(1);
+                    item.IdProduct = reader.GetInt32(2);
+                    item.Quantity = reader.GetInt32(3);
+                    item.UnitPrice = reader.GetDecimal(4);
+                    return item;
+                }
+                return new();
+            }
+        }
+
         public bool Update(OrderItem item)
         {
             using (SqlConnection sqlConnection = new SqlConnection(DataBaseConstant.ConnectionString))

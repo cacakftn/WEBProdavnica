@@ -86,6 +86,29 @@ namespace DAL.Impl
             }
         }
 
+        public Order GetOrderByUser(int userId)
+        {
+            using (SqlConnection sqlConnection = new SqlConnection(DataBaseConstant.ConnectionString))
+            {
+                sqlConnection.Open();
+                SqlCommand cmd = sqlConnection.CreateCommand();
+                cmd.CommandText = "SELECT TOP 1 * FROM Orders WHERE IdUser=@x ORDER BY IdOrder DESC";
+
+                cmd.Parameters.AddWithValue("@x", userId);
+                SqlDataReader reader = cmd.ExecuteReader();
+                if (reader.Read())
+                {
+                    Order order = new Order();
+                    order.IdOrder = reader.GetInt32(0);
+                    order.IdUser = reader.GetInt32(1);
+                    order.OrderDate = reader.GetDateTime(2);
+                    order.TotalPrice = reader.GetDecimal(3);
+                    return order;
+                }
+                return new();
+            }
+        }
+
         public bool Update(Order item)
         {
             using (SqlConnection sqlConnection = new SqlConnection(DataBaseConstant.ConnectionString))
