@@ -16,5 +16,8 @@ namespace Entities
         public bool Status { get; set; }
         public DateTime CreatedDate { get; set; }
         public int IdRole { get; set; }
+        public string? Username { get; set; }
+        public string? RefreshToken { get; set; }
+        public DateTime? RefreshTokenExpiry { get; set; }
     }
 }
