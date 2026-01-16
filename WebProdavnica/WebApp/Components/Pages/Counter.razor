@@ -1,19 +1,57 @@
 ﻿@page "/counter"
+@using BusinessLayer.Abstract
 @rendermode InteractiveServer
+@using Entities;
+@inject IProductBusiness productBus
 
-<PageTitle>Counter</PageTitle>
 
-<h1>Counter</h1>
 
-<p role="status">Current count: @currentCount</p>
+<PageTitle>Proizvodi</PageTitle>
 
-<button class="btn btn-primary" @onclick="IncrementCount">Click me</button>
+<h1>Proizvodi</h1>
+
+<table class="table text-center">
+    <thead>
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">Ime proizvoda</th>
+            <th scope="col">Cena</th>
+            <th scope="col">Broj dostupnih proizvoda</th>
+        </tr>
+    </thead>
+    <tbody>
+        @{
+            foreach (var item in Proucts){
+                <tr>
+                    <th scope="row">@Count</th>
+                    <td>@item.Name</td>
+                    <td>@item.Price</td>
+                    <td>
+                      @{  if(item.Count>0){
+                    <button type="button" class="btn btn-outline-success w-5">@item.Count</button>
+                    }
+                    else{
+                    <button type="button" class="btn btn-outline-danger w-5">@item.Count</button>
+                    }}
+                    </td>
+                </tr>
+                Count++;
+            }
+        }
+
+    </tbody>
+</table>
+
 
 @code {
-    private int currentCount = 0;
 
-    private void IncrementCount()
-    {
-        currentCount++;
-    }
+    private List<Product> Proucts { get; set; } = new();
+
+    private int Count = 1;
+
+	protected override void OnInitialized()
+	{
+		Proucts = productBus.GetAll();
+	}
+
 }
