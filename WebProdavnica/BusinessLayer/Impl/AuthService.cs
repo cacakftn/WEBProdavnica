@@ -28,15 +28,15 @@ namespace BusinessLayer.Impl
         {
             // Provera da li korisnik već postoji
             var existingUser = _userRepository.GetByUsername(request.Username);
-            if (existingUser != null)
+            if (request.Username == existingUser.Username)
             {
-                return null; // Korisnik već postoji
+                return null; 
             }
 
             var existingEmail = _userRepository.GetByEmail(request.Email);
-            if (existingEmail != null)
+            if (existingEmail.Email == request.Email)
             {
-                return null; // Email već postoji
+                return null; 
             }
 
             // Kreiranje novog korisnika

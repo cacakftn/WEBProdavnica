@@ -1,0 +1,75 @@
+@page "/login"
+@layout Layout.AuthLayout
+@rendermode InteractiveServer
+@attribute [AllowAnonymous]
+@using BusinessLayer.Abstract
+@using Entities.DTOs
+@using Microsoft.AspNetCore.Authorization
+@using WebApp.Auth
+@using Microsoft.AspNetCore.Components.Authorization
+
+@inject IAuthService AuthService
+@inject NavigationManager Navigation
+@inject AuthenticationStateProvider AuthStateProvider
+
+<div class="d-flex justify-content-center align-items-center vh-100" style="background-color: #f0f2f5;">
+    <div class="card shadow-lg border-0 rounded-4" style="width: 400px;">
+        <div class="card-body p-5">
+            <h2 class="text-center mb-4 fw-bold text-primary">Login</h2>
+            
+            @if (!string.IsNullOrEmpty(errorMessage))
+            {
+                <div class="alert alert-danger" role="alert">
+                    @errorMessage
+                </div>
+            }
+
+            <EditForm Model="@item" OnValidSubmit="HandleLogin" FormName="loginForm">
+                <DataAnnotationsValidator />
+                
+                <div class="mb-3">
+                    <label class="form-label text-muted">Username</label>
+                    <InputText @bind-Value="item.Username" class="form-control form-control-lg bg-light border-0" placeholder="Enter your username" />
+                    <ValidationMessage For="@(() => item.Username)" />
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label text-muted">Password</label>
+                    <InputText @bind-Value="item.Password" type="password" class="form-control form-control-lg bg-light border-0" placeholder="Enter your password" />
+                    <ValidationMessage For="@(() => item.Password)" />
+                </div>
+
+                <button type="submit" class="btn btn-primary w-100 btn-lg rounded-pill fw-bold shadow-sm">Login</button>
+            </EditForm>
+
+            <div class="text-center mt-4">
+                <span class="text-muted">Don't have an account? </span>
+                <a href="register" class="text-decoration-none fw-bold">Register here</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    [SupplyParameterFromForm]
+    public LoginRequest item { get; set; } = new();
+    
+    private string? errorMessage;
+
+    private async Task HandleLogin()
+    {
+        errorMessage = null;
+        var response = AuthService.Login(item);
+
+        if (response != null && !string.IsNullOrEmpty(response.AccessToken))
+        {
+            await ((CustomAuthenticationStateProvider)AuthStateProvider).MarkUserAsAuthenticated(response.AccessToken);
+            Console.WriteLine("Login successful. Navigating to home...");
+            Navigation.NavigateTo("/");
+        }
+        else
+        {
+            errorMessage = "Invalid username or password.";
+        }
+    }
+}

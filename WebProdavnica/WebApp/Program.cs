@@ -4,6 +4,8 @@ using DAL.Abstract;
 using DAL.Impl;
 using Entities.Configuration;
 using WebApp.Components;
+using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 namespace WebApp
 {
@@ -16,6 +18,17 @@ namespace WebApp
             // Add services to the container.
             builder.Services.AddRazorComponents()
                 .AddInteractiveServerComponents();
+
+            builder.Services.AddCascadingAuthenticationState();
+            builder.Services.AddAuthorization();
+            builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+                .AddCookie(options =>
+                {
+                    options.LoginPath = "/login";
+                });
+            builder.Services.AddScoped<WebApp.Auth.CustomAuthenticationStateProvider>();
+            builder.Services.AddScoped<AuthenticationStateProvider>(sp => sp.GetRequiredService<WebApp.Auth.CustomAuthenticationStateProvider>());
+
             
           var jwt=  builder.Configuration.GetSection("JwtSettings").Get<JwtSettings>();
 
@@ -50,6 +63,8 @@ namespace WebApp
 
             app.UseStaticFiles();
             app.UseAntiforgery();
+            app.UseAuthentication();
+            app.UseAuthorization();
 
             app.MapRazorComponents<App>()
                 .AddInteractiveServerRenderMode();

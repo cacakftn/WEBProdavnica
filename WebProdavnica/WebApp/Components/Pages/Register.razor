@@ -1,0 +1,93 @@
+@page "/register"
+@layout Layout.AuthLayout
+@rendermode InteractiveServer
+@attribute [AllowAnonymous]
+@using BusinessLayer.Abstract
+@using Entities.DTOs
+@inject IAuthService AuthService
+@inject NavigationManager Navigation
+
+<div class="d-flex justify-content-center align-items-center min-vh-100" style="background-color: #f0f2f5;">
+    <div class="card shadow-lg border-0 rounded-4 my-5" style="width: 500px;">
+        <div class="card-body p-5">
+            <h2 class="text-center mb-4 fw-bold text-success">Create Account</h2>
+            
+            @if (!string.IsNullOrEmpty(errorMessage))
+            {
+                <div class="alert alert-danger" role="alert">
+                    @errorMessage
+                </div>
+            }
+
+            <EditForm Model="@item" OnValidSubmit="HandleRegister" FormName="registerForm">
+                <DataAnnotationsValidator />
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label text-muted">First Name</label>
+                        <InputText @bind-Value="item.FirstName" class="form-control bg-light border-0" />
+                        <ValidationMessage For="@(() => item.FirstName)" />
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label text-muted">Last Name</label>
+                        <InputText @bind-Value="item.LastName" class="form-control bg-light border-0" />
+                        <ValidationMessage For="@(() => item.LastName)" />
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label text-muted">Username</label>
+                    <InputText @bind-Value="item.Username" class="form-control bg-light border-0" />
+                    <ValidationMessage For="@(() => item.Username)" />
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label text-muted">Email</label>
+                    <InputText @bind-Value="item.Email" class="form-control bg-light border-0" />
+                    <ValidationMessage For="@(() => item.Email)" />
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label text-muted">Password</label>
+                    <InputText @bind-Value="item.Password" type="password" class="form-control bg-light border-0" />
+                    <ValidationMessage For="@(() => item.Password)" />
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label text-muted">Confirm Password</label>
+                    <InputText @bind-Value="item.ConfirmPassword" type="password" class="form-control bg-light border-0" />
+                    <ValidationMessage For="@(() => item.ConfirmPassword)" />
+                </div>
+
+                <button type="submit" class="btn btn-success w-100 btn-lg rounded-pill fw-bold shadow-sm">Register</button>
+            </EditForm>
+
+            <div class="text-center mt-4">
+                <span class="text-muted">Already have an account? </span>
+                <a href="login" class="text-decoration-none fw-bold">Login here</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    [SupplyParameterFromForm]
+    public RegisterRequest item { get; set; } = new();
+    
+    private string? errorMessage;
+
+    private void HandleRegister()
+    {
+        errorMessage = null;
+        var response = AuthService.Register(item);
+
+        if (response != null)
+        {
+            Navigation.NavigateTo("login");
+        }
+        else
+        {
+            errorMessage = "Registration failed. Username or Email might already exist.";
+        }
+    }
+}
