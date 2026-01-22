@@ -3,12 +3,13 @@
 @rendermode InteractiveServer
 @using Entities;
 @inject IProductBusiness productBus
-
+@inject NavigationManager nv
 
 
 <PageTitle>Proizvodi</PageTitle>
 
 <h1>Proizvodi</h1>
+<button class="btn btn-primary" @onclick="Add">Add</button>
 
 <table class="table text-center">
     <thead>
@@ -17,7 +18,7 @@
             <th scope="col">Ime proizvoda</th>
             <th scope="col">Cena</th>
             <th scope="col">Broj dostupnih proizvoda</th>
-           
+            <th scope="col">Edit/Delete</th>
         </tr>
     </thead>
     <tbody>
@@ -28,16 +29,19 @@
                     <td>@item.Name</td>
                     <td>@item.Price</td>
                     <td>
-                      @{  if(item.Count>0){
-                    <button type="button" class="btn btn-outline-success w-5">@item.Count</button>
-                    }
-                    else{
-                    <button type="button" class="btn btn-outline-danger w-5">@item.Count</button>
-                    }}
+                        @{  if(item.Count>0){
+                                <button type="button" class="btn btn-outline-success w-5">@item.Count</button>
+                            }
+                            else{
+                                <button type="button" class="btn btn-outline-danger w-5">@item.Count</button>
+                            }}
+                    </td>
+                    <td>
+                        <button class="btn" @onclick="()=>Edit(item.IdProduct)">Edit</button>
+                        <button class="btn" @onclick="()=>Delete(item.IdProduct)">Delete</button>
                     </td>
 
 
-                    
                 </tr>
                 Count++;
             }
@@ -53,9 +57,25 @@
 
     private int Count = 1;
 
-	protected override void OnInitialized()
-	{
-		Proucts = productBus.GetAll();
-	}
+    protected override void OnInitialized()
+    {
+        Proucts = productBus.GetAll();
+    }
+    private void Add()
+    {
+        nv.NavigateTo("/addProduct");
+    }
+    private void Edit(int id)
+    {
+        nv.NavigateTo("/editProduct/" + id);
+    }
+    private void Delete(int id)
+    {
+        var product = productBus.Get(id);
+        var x = productBus.Delete(product);
+        if(x.Status==false){
 
+        }
+        OnInitialized();
+    }
 }

@@ -46,7 +46,7 @@ namespace WebApp
             builder.Services.AddScoped<IJwtService, JwtService>();
             builder.Services.AddScoped<IOrderBusiness, OrderBusiness>();
             builder.Services.AddScoped<IProductBusiness, ProductBusiness>();
-
+            builder.Services.AddScoped<ICategoryBusiness, CategoryBusiness>();
 
 
             var app = builder.Build();

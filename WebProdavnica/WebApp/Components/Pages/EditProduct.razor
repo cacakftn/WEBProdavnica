@@ -1,0 +1,69 @@
+﻿@page "/editProduct/{idProduct:int}"
+@using Entities;
+@using BusinessLayer.Abstract
+
+@inject ICategoryBusiness categoryBus
+@inject IProductBusiness productBus
+@inject NavigationManager nv
+<h3>EditProduct</h3>
+
+<EditForm Model="@product" OnValidSubmit="Edit" FormName="editProduct">
+    <DataAnnotationsValidator />
+
+    <div class="row">
+        <div class="col-md-6 mb-3">
+            <label class="form-label text-muted">Name</label>
+            <InputText @bind-Value="product.Name" class="form-control bg-light border-0" />
+            <ValidationMessage For="@(() => product.Name)" />
+        </div>
+        <div class="col-md-6 mb-3">
+            <label class="form-label text-muted">Price</label>
+            <InputNumber @bind-Value="product.Price" class="form-control bg-light border-0" />
+            <ValidationMessage For="@(() => product.Price)" />
+        </div>
+        <div class="col-md-6 mb-3">
+            <label class="form-label text-muted">Unesite broj proizvoda</label>
+            <InputNumber @bind-Value="product.Count" class="form-control bg-light border-0" />
+            <ValidationMessage For="@(() => product.Count)" />
+        </div>
+
+        <div class="col-md-6 mb-3">
+            <label class="form-label text-muted">Unesite broj proizvoda</label>
+            <select class="form-select" @bind="product.IdCategory">
+                @{
+                    foreach (var item in Categories)
+                    {
+                        <option value="@item.IdCategory">@item.Name</option>
+                        Console.WriteLine(item.Name);
+                    }
+                }
+            </select>
+        </div>
+        <button class="btn btn-primary" type="submit">Save</button>
+        <p class="text-danger">@error</p>
+    </div>
+</EditForm>
+
+
+
+@code {
+    [Parameter]
+    public int idProduct{ get; set; }
+    public Product product { get; set; } = new();
+    public List<Category> Categories { get; set; } = new();
+    private string? error { get; set; } = null;
+    protected override void OnInitialized()
+    {
+        product = productBus.Get(idProduct);
+        Categories = categoryBus.GetCategories();
+    }
+    private void Edit()
+    {
+        var result = productBus.Update(product);
+        if (result.Status == false)
+        {
+            error = result.Message;
+        }
+        nv.NavigateTo("/counter");
+    }
+}
