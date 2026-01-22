@@ -1,0 +1,60 @@
+CREATE TABLE [dbo].[Roles] (
+    [IdRole] INT            IDENTITY (1, 1) NOT NULL,
+    [Name]   NVARCHAR (MAX) NOT NULL,
+    PRIMARY KEY CLUSTERED ([IdRole] ASC)
+);
+
+CREATE TABLE [dbo].[Users] (
+    [IdUser]             INT            IDENTITY (1, 1) NOT NULL,
+    [FirstName]          NVARCHAR (MAX) NOT NULL,
+    [LastName]           NVARCHAR (MAX) NOT NULL,
+    [Email]              NVARCHAR (MAX) NOT NULL,
+    [PasswordHash]       NVARCHAR (MAX) NOT NULL,
+    [Status]             BIT            NOT NULL,
+    [CretedDate]         DATETIME       DEFAULT (getdate()) NOT NULL,
+    [IdRole]             INT            NOT NULL,
+    [Username]           NVARCHAR (MAX) NOT NULL,
+    [RefreshToken]       NVARCHAR (MAX) NOT NULL,
+    [RefreshTokenExpiry] DATETIME       NOT NULL,
+    PRIMARY KEY CLUSTERED ([IdUser] ASC),
+    FOREIGN KEY ([IdRole]) REFERENCES [dbo].[Roles] ([IdRole])
+);
+
+CREATE TABLE [dbo].[Categories] (
+    [IdCategory] INT            IDENTITY (1, 1) NOT NULL,
+    [Name]       NVARCHAR (MAX) NOT NULL,
+    PRIMARY KEY CLUSTERED ([IdCategory] ASC)
+);
+CREATE TABLE [dbo].[Products] (
+    [IdProduct]  INT            IDENTITY (1, 1) NOT NULL,
+    [Name]       NVARCHAR (MAX) NOT NULL,
+    [Price]      DECIMAL (18)   NOT NULL,
+    [Count]      INT            NOT NULL,
+    [IdCategory] INT            NOT NULL,
+    PRIMARY KEY CLUSTERED ([IdProduct] ASC),
+    FOREIGN KEY ([IdCategory]) REFERENCES [dbo].[Categories] ([IdCategory])
+);
+
+
+
+CREATE TABLE [dbo].[Orders] (
+    [IdOrder]    INT          IDENTITY (1, 1) NOT NULL,
+    [IdUser]     INT          NOT NULL,
+    [OrderDate]  DATETIME     DEFAULT (getdate()) NOT NULL,
+    [TotalPrice] DECIMAL (18) NOT NULL,
+    PRIMARY KEY CLUSTERED ([IdOrder] ASC),
+    FOREIGN KEY ([IdUser]) REFERENCES [dbo].[Users] ([IdUser])
+);
+CREATE TABLE [dbo].[OrderItems] (
+    [IdOrderItem] INT          IDENTITY (1, 1) NOT NULL,
+    [IdOrder]     INT          NOT NULL,
+    [IdProduct]   INT          NOT NULL,
+    [Quantity]    INT          NOT NULL,
+    [UnitPrice]   DECIMAL (18) NOT NULL,
+    PRIMARY KEY CLUSTERED ([IdOrderItem] ASC),
+    FOREIGN KEY ([IdOrder]) REFERENCES [dbo].[Orders] ([IdOrder]),
+    FOREIGN KEY ([IdProduct]) REFERENCES [dbo].[Products] ([IdProduct])
+);
+
+
+
